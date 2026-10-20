@@ -1,0 +1,51 @@
+@page "/"
+@rendermode InteractiveServer
+@using BlazorUsersJsonPlaceHolderApi.Models
+@using BlazorUsersJsonPlaceHolderApi.Services
+@inject UserService UserService
+
+<PageTitle>Usuários - JsonPlaceHolder</PageTitle>
+
+<h1>Primeira pessoa retornada pela API</h1>
+
+@if (erro != null)
+{
+    <p class="text-danger">Erro ao consumir a API: @erro</p>
+}
+else if (usuario == null)
+{
+    <p><em>Carregando...</em></p>
+}
+else
+{
+    <div class="card" style="max-width: 400px;">
+        <div class="card-body">
+            <p><strong>Nome:</strong> @usuario.Name</p>
+            <p><strong>Cidade:</strong> @usuario.Address.City</p>
+            <p><strong>Empresa:</strong> @usuario.Company.Name</p>
+        </div>
+    </div>
+}
+
+@code {
+    private User? usuario;
+    private string? erro;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            usuario = await UserService.GetFirstUserAsync();
+
+            if (usuario != null)
+            {
+                // Também imprime no console do servidor
+                UserService.PrintUser(usuario);
+            }
+        }
+        catch (Exception ex)
+        {
+            erro = ex.Message;
+        }
+    }
+}
